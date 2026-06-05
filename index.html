@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>正在读取... Reading...</title>
+    <link rel="icon" href="/images/icon.png" type="image/png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="app-container">
+        <div id="canvas-container">
+            <div id="canvas-frame">
+                <canvas id="gl-canvas"></canvas>
+                <canvas id="layer3-canvas"></canvas>
+                <canvas id="layer2-canvas"></canvas>
+
+                <div id="layer1-container">
+                    <img src="images/top.png" id="layer1-top" alt="展览头部信息">
+                    <img src="images/middle.png" id="layer1-middle" alt="展览中部符号">
+                    <img src="images/bottom.png" id="layer1-bottom" alt="展览底部主办方">
+                </div>
+            </div>
+        </div>
+
+        <div id="control-panel">
+
+            <div class="layer-section" id="section-layer1">
+                <div class="layer-header">
+                    <label class="visibility-toggle">
+                        <input type="checkbox" id="toggle-layer1" checked>
+                        <span class="eye-icon"></span>
+                    </label>
+                    <details open>
+                        <summary><span class="summary-title"><span class="summary-ch">信息</span><span class="summary-en">Prompt</span></span></summary>
+                        <div class="details-content">
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <div class="layer-section" id="section-layer2">
+                <div class="layer-header">
+                    <label class="visibility-toggle">
+                        <input type="checkbox" id="toggle-layer2" checked>
+                        <span class="eye-icon"></span>
+                    </label>
+                    <details open>
+                        <summary><span class="summary-title"><span class="summary-ch">占位符</span><span class="summary-en">Placeholder</span></span></summary>
+                        <div class="details-content">
+                            <div class="control-group">
+                                <label><span class="label-ch">占位块数</span><span class="label-en">Placeholder Blocks</span></label>
+                                <input type="range" id="u_box_count" min="0" max="80" step="1" value="40">
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <div class="layer-section" id="section-layer3">
+                <div class="layer-header">
+                    <label class="visibility-toggle">
+                        <input type="checkbox" id="toggle-layer3" checked>
+                        <span class="eye-icon"></span>
+                    </label>
+                    <details open>
+                        <summary><span class="summary-title"><span class="summary-ch">读取</span><span class="summary-en">Read</span></span></summary>
+                        <div class="details-content">
+                            <div class="control-group">
+                                <label><span class="label-ch">解析速度</span><span class="label-en">Parse Speed</span></label>
+                                <input type="range" id="u_type_speed" min="0" max="4" step="1" value="2">
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <div class="layer-section" id="section-layer4">
+                <div class="layer-header">
+                    <label class="visibility-toggle">
+                        <input type="checkbox" id="toggle-layer4" checked>
+                        <span class="eye-icon"></span>
+                    </label>
+                    <details open> 
+                        <summary><span class="summary-title"><span class="summary-ch">底噪</span><span class="summary-en">Noise</span></span></summary>
+                        <div class="details-content">
+                            <div class="control-group">
+                                <label><span class="label-ch">信号点数</span><span class="label-en">Signal Points</span></label>
+                                <input type="range" id="u_ball_count" min="0" max="120" step="1" value="60">
+                            </div>
+                            <div class="control-group">
+                                <label><span class="label-ch">信号扩散</span><span class="label-en">Signal Spread</span></label>
+                                <input type="range" id="u_base_radius" min="0" max="1.8" step="0.01" value="0.90">
+                            </div>
+                            <div class="control-group">
+                                <label><span class="label-ch">衰减率</span><span class="label-en">Decay Rate</span></label>
+                                <input type="range" id="u_decay" min="0" max="5.0" step="0.05" value="2.50">
+                            </div>
+                            <div class="control-group">
+                                <label><span class="label-ch">信号聚焦</span><span class="label-en">Signal Focus</span></label>
+                                <input type="range" id="u_focus" min="0" max="0.20" step="0.01" value="0.10">
+                            </div>
+                            <div class="control-group">
+                                <label><span class="label-ch">漂移</span><span class="label-en">Drift</span></label>
+                                <input type="range" id="u_warp_strength" min="0" max="0.80" step="0.05" value="0.40">
+                            </div>
+                            <div class="control-group">
+                                <label><span class="label-ch">刷新率</span><span class="label-en">Refresh Rate</span></label>
+                                <input type="range" id="u_flow_speed" min="0" max="4.0" step="0.05" value="2.00">
+                            </div>
+                            <div class="control-group">
+                                <label><span class="label-ch">浮现阈值</span><span class="label-en">Emergence Threshold</span></label>
+                                <input type="range" id="u_silver_cut" min="0" max="0.24" step="0.01" value="0.12">
+                            </div>
+                            <div class="control-group">
+                                <label><span class="label-ch">峰值</span><span class="label-en">Peak</span></label>
+                                <input type="range" id="u_gold_cut" min="0" max="1.20" step="0.01" value="0.60">
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="js/shaders.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/fluid-engine.js"></script>
+    <script src="js/layer3-engine.js"></script>
+    <script src="js/layer2-engine.js"></script>
+    <script src="js/layer1-engine.js"></script>
+</body>
+</html>

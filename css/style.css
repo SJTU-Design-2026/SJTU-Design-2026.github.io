@@ -1,0 +1,394 @@
+@font-face {
+    font-family: 'InstrumentSerif';
+    src: url('../fonts/InstrumentSerif-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+@media (max-width: 900px), (max-aspect-ratio: 9/16) {
+    body, html {
+        overflow-x: hidden;
+        overflow-y: auto;
+        min-height: 100vh;
+    }
+}
+
+#app-container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    min-height: 100vh;
+}
+
+#canvas-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: #fff;
+}
+
+@media (max-width: 900px), (max-aspect-ratio: 9/16) {
+    #app-container {
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        height: auto;
+    }
+
+    #canvas-container {
+        width: 100%;
+        min-height: 100vh;
+        height: 100vh;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #canvas-frame {
+        width: min(90vw, calc(90vh * 9 / 16));
+        max-height: 90vh;
+        margin: 0 auto;
+    }
+
+    #control-panel {
+        width: min(100%, 100vw);
+        max-width: 100%;
+        height: auto;
+        padding: 20px 20px calc(32px + 5vh);
+        margin-top: 20px;
+        margin-bottom: 5vh;
+    }
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* 新增：画布外框，固定为竖向 9:16 比例，默认高度 90vh，窄屏时宽度撑满并等比缩放 */
+#canvas-frame {
+    width: min(100%, calc(90vh * 9 / 16));
+    aspect-ratio: 9 / 16;
+    max-height: 90vh;
+    height: auto;
+    position: relative;
+    margin: 0 16px; /* 在左右保留留白 */
+    box-sizing: border-box;
+}
+
+/* 保持原有 style.css 的全部属性，在 Canvas 叠放层级部分加入以下样式控制 */
+
+#gl-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* 底层 WebGL 流体 */
+}
+
+#layer3-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2; /* 中层 衬线代码网 */
+    pointer-events: none;
+}
+
+#layer2-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3; /* 高层 占位符矩阵块 */
+    pointer-events: none;
+}
+
+#layer1-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 4; /* 顶层 绝对最高信息覆膜 */
+    pointer-events: none; /* 确保鼠标手势穿透 */
+    display: none; /* 初始隐藏，由 JS 引擎判定宽高比符合竖版时开启 */
+}
+
+#layer1-container img {
+    position: absolute;
+    width: 100%; /* 宽度和海报画布画面保持一致 */
+    left: 0;
+    display: block;
+}
+
+/* 顶着最上方 */
+#layer1-top {
+    top: 0;
+}
+
+/* 完全纵向垂直居中 */
+#layer1-middle {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 顶着最下方 */
+#layer1-bottom {
+    bottom: 0;
+}
+
+#layer3-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+#layer2-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3; /* 占位符置于文字之上 */
+    pointer-events: none;
+}
+
+#control-panel {
+    width: 340px;
+    height: 100%;
+    background: transparent;
+    border-left: none;
+    box-sizing: border-box;
+    padding: 24px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+h3 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #969696;
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 12px;
+}
+
+.layer-section {
+    padding: 6px 0;
+}
+
+.layer-header {
+    display: flex;
+    align-items: center;
+}
+
+details {
+    flex: 1;
+    width: 100%;
+}
+
+summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 12px;
+    font-weight: 600;
+    color: #969696;
+    padding: 6px 0;
+    cursor: pointer;
+    outline: none;
+    letter-spacing: 0.5px;
+    user-select: none;
+    border: none;
+    margin: 0;
+}
+
+.summary-title {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    gap: 12px;
+}
+
+.summary-ch {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+}
+
+.summary-en {
+    flex: 1;
+    text-align: right;
+    opacity: 0.72;
+}
+
+summary:hover {
+    color: #666;
+}
+
+summary::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin-left: 12px;
+    background-image: url('/images/fold.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+details[open] > summary::after {
+    background-image: url('/images/unfold.svg');
+}
+
+.details-content {
+    padding: 10px 4px 8px 4px;
+    background: transparent;
+    border: none;
+}
+
+.placeholder-text {
+    font-family: monospace;
+    font-size: 11px;
+    color: #999;
+    margin: 0;
+    padding: 14px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+}
+
+.control-group {
+    margin-bottom: 12px;
+}
+
+.control-group label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #969696;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    gap: 16px;
+}
+
+.label-ch {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+}
+
+.label-en {
+    flex: 1;
+    min-width: 0;
+    text-align: right;
+    opacity: 0.72;
+}
+
+.control-group label span.val {
+    font-family: monospace;
+    color: #969696;
+}
+
+.control-group input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    background: #e0e0e0;
+    height: 2px;
+    outline: none;
+}
+
+.control-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #969696;
+    cursor: pointer;
+}
+
+.visibility-toggle {
+    display: none;
+}
+
+.visibility-toggle input {
+    display: none;
+}
+
+.eye-icon {
+    display: none;
+}
+
+/* 隐藏原生 details 小三角（各浏览器） */
+summary { list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary::marker { content: none; }
+
+/* 自定义选择行排版样式 */
+.custom-ui-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.custom-ui-row label {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 0;
+    letter-spacing: 0.5px;
+}
+
+#u_text_color, #u_box_color {
+    -webkit-appearance: none;
+    border: 1px solid #e0e0e0;
+    background: none;
+    width: 36px;
+    height: 18px;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 2px;
+}
+#u_text_color::-webkit-color-swatch-wrapper, #u_box_color::-webkit-color-swatch-wrapper { padding: 0; }
+#u_text_color::-webkit-color-swatch, #u_box_color::-webkit-color-swatch { border: none; border-radius: 2px; }
+
+#u_blend_mode, #u_box_blend_mode, #u_layer1_blend_mode {
+    font-family: monospace;
+    font-size: 11px;
+    color: #969696;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    padding: 2px 6px;
+    outline: none;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
