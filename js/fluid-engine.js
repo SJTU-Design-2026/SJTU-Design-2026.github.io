@@ -57,11 +57,13 @@ function updateUniformsFromUI() {
 function setupUIListeners() {
     window.CONFIG.mappings.forEach(item => {
         const inputEl = document.getElementById(item.id);
-        const displayEl = document.getElementById(item.target);
         
-        if (inputEl && displayEl) {
+        if (inputEl) {
             inputEl.addEventListener('input', () => {
-                displayEl.innerText = parseFloat(inputEl.value).toFixed(item.fix);
+                const displayEl = document.getElementById(item.target);
+                if (displayEl) {
+                    displayEl.innerText = parseFloat(inputEl.value).toFixed(item.fix);
+                }
                 updateUniformsFromUI();
             });
         }
